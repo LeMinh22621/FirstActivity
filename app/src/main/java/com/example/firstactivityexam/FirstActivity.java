@@ -1,9 +1,17 @@
 package com.example.firstactivityexam;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
@@ -11,19 +19,44 @@ import com.example.firstactivityexam.databinding.ActivityFirstBinding;
 
 public class FirstActivity extends Activity {
     private final  String tAG = "FirstActivity";
+    private ActivityFirstBinding activityFirstBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
+        activityFirstBinding = DataBindingUtil.setContentView(this, R.layout.activity_first);
+
+        View rootView = activityFirstBinding.getRoot();
+
+        setContentView(rootView);
 
         Log.d(tAG, "onCreate");
 
-        ActivityFirstBinding activityFirstBinding = ActivityFirstBinding.inflate(getLayoutInflater());
+        activityFirstBinding.btnIdIm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                String data = activityFirstBinding.etUrl.getText().toString();
+//                intent.setData(Uri.parse(data));
+//                startActivity(intent);
 
-        setContentView(R.layout.activity_first);
+                int permissionCheck = ContextCompat.checkSelfPermission(FirstActivity.this, Manifest.permission.CALL_PHONE);
 
+                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(FirstActivity.this, new String[]{Manifest.permission.CALL_PHONE}, 12);
+                } else {
+                    Intent intent = new Intent(Intent.ACTION_CALL);
+                    String data = activityFirstBinding.etUrl.getText().toString();
+
+                    intent.setData(Uri.parse("tel:" + data));
+                    startActivity(intent);
+                }
+
+
+            }
+        });
     }
 
     @Override
@@ -67,4 +100,6 @@ public class FirstActivity extends Activity {
         super.onStop();
         Log.d(tAG, "onStop");
     }
+
+
 }
